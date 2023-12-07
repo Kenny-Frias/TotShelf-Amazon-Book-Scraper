@@ -44,10 +44,14 @@ class AmazonSearchProductSpider(scrapy.Spider):
         stars_float = float(re.search(r'([\d.]+)', stars).group()) if re.search(r'([\d.]+)', stars) else 0.0
         reviews_text = response.css("span#acrCustomerReviewText.a-size-base::text").get()
         num_reviews = int(re.sub(r'[^\d]', '', reviews_text)) if reviews_text else 0
+        reading_age = response.css("div.a-section.a-spacing-none.a-text-center.rpi-attribute-value span::text").get()     
+        if not reading_age:
+            reading_age = response.css("div.a-section.a-spacing-none.a-text-center.rpi-attribute-value [data-a-modal*='Customer Recommended Reading Age'] span::text").get()
+        if reading_age:
+            reading_age_int = int(reading_age.strip().split()[0])  # Extract the numerical part
+           
        
-       
-       
-        if stars_float >= 4.5 and num_reviews >= 100:
+        if stars_float >= 4.5 and num_reviews >= 100 and reading_age_int <= 6:
             image_data = json.loads(re.findall(r"colorImages':.*'initial':\s*(\[.+?\])},\n", response.text)[0])
             main_image = None
            
@@ -61,9 +65,7 @@ class AmazonSearchProductSpider(scrapy.Spider):
 
 
             
-            reading_age = response.css("div.a-section.a-spacing-none.a-text-center.rpi-attribute-value span::text").get()     
-            if not reading_age:
-                reading_age = response.css("div.a-section.a-spacing-none.a-text-center.rpi-attribute-value [data-a-modal*='Customer Recommended Reading Age'] span::text").get()
+           
 
            
             yield {
