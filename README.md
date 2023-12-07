@@ -81,4 +81,3 @@ If you would like to save your CSV files to an Excel file, you must:
 Video Instructions: https://www.youtube.com/watch?v=ebnNy5yEkvc
 
 
-** under 6 years + blurb
