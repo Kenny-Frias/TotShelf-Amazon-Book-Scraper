@@ -44,44 +44,37 @@ class AmazonSearchProductSpider(scrapy.Spider):
         stars_float = float(re.search(r'([\d.]+)', stars).group()) if re.search(r'([\d.]+)', stars) else 0.0
         reviews_text = response.css("span#acrCustomerReviewText.a-size-base::text").get()
         num_reviews = int(re.sub(r'[^\d]', '', reviews_text)) if reviews_text else 0
-        reading_age = response.css("div.a-section.a-spacing-none.a-text-center.rpi-attribute-value span::text").get()     
-        if not reading_age:
-            reading_age = response.css("div.a-section.a-spacing-none.a-text-center.rpi-attribute-value [data-a-modal*='Customer Recommended Reading Age'] span::text").get()
-        if reading_age:
-            reading_age_int = int(reading_age.strip().split()[0])  # Extract the numerical part
-           
-       
-        if stars_float >= 4.5 and num_reviews >= 100 and reading_age_int <= 6:
-            image_data = json.loads(re.findall(r"colorImages':.*'initial':\s*(\[.+?\])},\n", response.text)[0])
-            main_image = None
-           
-            for image in image_data:
-                if "variant" in image and image["variant"] == "MAIN":
-                    main_image = image.get("large", image.get("hiRes"))
-                    break
-            author_name = response.css("span.author a.a-link-normal::text").getall()
-            book_description = response.css("div#bookDescription_feature_div div.a-expander-content span::text").getall()
-            book_description = ' '.join(book_description).strip()
+        
+    
+        image_data = json.loads(re.findall(r"colorImages':.*'initial':\s*(\[.+?\])},\n", response.text)[0])
+        main_image = None
+        
+        for image in image_data:
+            if "variant" in image and image["variant"] == "MAIN":
+                main_image = image.get("large", image.get("hiRes"))
+                break
+        author_name = response.css("span.author a.a-link-normal::text").getall()
+        book_description = response.css("div#bookDescription_feature_div div.a-expander-content span::text").getall()
+        book_description = ' '.join(book_description).strip()
 
 
+        
+        
+
+        
+        yield {
+            "Book Name": response.css("#productTitle::text").get("").strip(),
+            "Author Name": author_name,
+            "Rating": stars,
+            "Number of Reviews": num_reviews,  
+            "Book Description": book_description,
+            "Image Link": main_image,
+            "Amazon Book Link": response.url,
             
-           
+        }
 
-           
-            yield {
-                "Book Name": response.css("#productTitle::text").get("").strip(),
-                "Author Name": author_name,
-                "Reading Age": reading_age if reading_age else None,  # Include the reading age (or None if not found)
-                "Rating": stars,
-                "Number of Reviews": num_reviews,  
-                "Book Description": book_description,
-                "Image Link": main_image,
-                "Amazon Book Link": response.url,
-                
-            }
-    
-    
-    
+
+
 
 
 

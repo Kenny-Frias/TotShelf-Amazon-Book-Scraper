@@ -7,7 +7,7 @@ NEWSPIDER_MODULE = 'amazon.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
-SCRAPEOPS_API_KEY = 'd39c7876-41ad-41f9-869e-a384eac29219'
+SCRAPEOPS_API_KEY = '22e5961a-aea5-480e-baf5-2a82df5ba3dc'
 
 SCRAPEOPS_PROXY_ENABLED = True
 # SCRAPEOPS_PROXY_SETTINGS = {'country': 'us'}
